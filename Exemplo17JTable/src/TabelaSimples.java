@@ -1,4 +1,5 @@
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -9,8 +10,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -19,12 +23,14 @@ import javax.swing.table.DefaultTableModel;
 
 public class TabelaSimples extends JFrame {
 	
-	static String URL = "jdbc:postgresql:Faculdade";
-	static String USER = "postgres";
-	static String PASS = "123456";
-	
 	DefaultTableModel dtm = new DefaultTableModel();
 	JTextField textBusca = new JTextField(50);
+	
+	JTextField textAddRA = new JTextField(50);
+	JTextField textAddNome = new JTextField(50);
+	JButton botaoAddAluno = new JButton("Adiciona");
+	
+	JLabel mostraErro = new JLabel("");
 	
 	public TabelaSimples() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,33 +38,28 @@ public class TabelaSimples extends JFrame {
 		
 		setLayout(new BorderLayout());
 		
+		
+		JPanel controle = new JPanel();
+		controle.setLayout(new GridLayout(0, 1));
+		add(controle, BorderLayout.PAGE_START);
+		
 		JPanel panelTextField = new JPanel();
 		panelTextField.add(textBusca);
-		textBusca.addActionListener(new ComportamentoBusca());
-		add(panelTextField, BorderLayout.PAGE_START);
+		controle.add(panelTextField);
 		
-		String query = "SELECT * FROM alunos";
-		try(Connection c = DriverManager.getConnection(URL, USER, PASS)){
-			Statement stm = c.createStatement();
-			ResultSet rs = stm.executeQuery(query);
-			ArrayList<Aluno> alunos = new ArrayList<>();
-			while(rs.next()) {
-				String ra = rs.getString("ra");
-				String nome = rs.getString("nome");
-				alunos.add(new Aluno(ra, nome));
-			}
-			
-			Object[][] dados = new Object[alunos.size()][2];
-			for(int i=0; i<alunos.size(); i++) {
-				dados[i][0] = alunos.get(i).ra;    //alunos[i].ra
-				dados[i][1] = alunos.get(i).nome;
-			}
-			
-			Object[] colsNames = {"ra", "nome"};
-			dtm = new DefaultTableModel(dados, colsNames);
-		}catch (SQLException e) {
-			e.printStackTrace();
-		}
+		controle.add(mostraErro);
+		
+		JPanel panelAddAluno = new JPanel();
+		panelAddAluno.setLayout(new GridLayout(0, 1));
+		panelAddAluno.add(textAddRA);
+		panelAddAluno.add(textAddNome);
+		panelAddAluno.add(botaoAddAluno);
+		controle.add(panelAddAluno);
+		
+		
+		Object[] colNames = {"Ra", "Nome"};
+		Object[][] data = new Object[0][2];
+		dtm = new DefaultTableModel(data, colNames);
 		
 		JTable table = new JTable(dtm);
 		JScrollPane scroolPane = new JScrollPane(table);
@@ -70,38 +71,43 @@ public class TabelaSimples extends JFrame {
 		pack();
 	}
 	
-	void atualizaTabela(String nome) {
-		String query = 
-				"SELECT * FROM alunos "
-				+ "WHERE LOWER(nome) LIKE LOWER(?)";
-		
-		try(Connection c = DriverManager.getConnection(URL, USER, PASS)){
-			PreparedStatement pstm = c.prepareStatement(query);
-			pstm.setString(1, "%"+nome+"%");
-			ResultSet rs = pstm.executeQuery();
-			dtm.setRowCount(0);   // Limpa a table, 
-			                      //quantidade de linhas para zero
-			while(rs.next()) {
-				Object[] rowData = new Object[2];
-				rowData[0] = rs.getString(1);
-				rowData[1] = rs.getString(2);
-				dtm.addRow(rowData);
-			}
-		}catch(SQLException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
-	class ComportamentoBusca implements ActionListener {
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			String nome = textBusca.getText();
-			atualizaTabela(nome);
+	void mostraAlunos(List<Aluno> alunos) {
+		dtm.setNumRows(0);
+		for(Aluno aluno : alunos) {
+			Object[] data = new Object[2];
+			data[0] = aluno.ra;
+			data[1] = aluno.nome;
+			dtm.addRow(data);
 		}
 		
 	}
+	
+	public String getNomeBusca() {
+		return textBusca.getText();
+	}
+	
+	public void addBuscaComportamento(ActionListener al) {
+		textBusca.addActionListener(al);
+	}
+	
+	
+	public String getAddRa() {
+		return textAddRA.getText();
+	}
+	
+	public String getAddNome() {
+		return textAddNome.getText();
+	}
+	
+	public void addAdicionaComportamento(ActionListener al) {
+		botaoAddAluno.addActionListener(al);
+	}
+	
+	public void mostraAlunoNaoAdicionado() {
+		mostraErro.setText("Alunos Não Adicionado");
+	}
+	
+	
 	
 	
 }

@@ -39,7 +39,8 @@ public class Controller {
 			String nome = view.getAddNome();
 			
 			boolean resultado = model.addAluno(ra, nome);
-			view.mostraAlunoNaoAdicionado();
+			if(resultado==false) view.mostraAlunoNaoAdicionado();
+			else view.mostraAlunoAdicionado();
 			
 		}
 		

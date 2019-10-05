@@ -1,7 +1,9 @@
+package view;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -21,9 +23,13 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import model.Aluno;
+
 public class TabelaSimples extends JFrame {
 	
 	DefaultTableModel dtm = new DefaultTableModel();
+	JTable table;
+	
 	JTextField textBusca = new JTextField(50);
 	
 	JTextField textAddRA = new JTextField(50);
@@ -61,7 +67,13 @@ public class TabelaSimples extends JFrame {
 		Object[][] data = new Object[0][2];
 		dtm = new DefaultTableModel(data, colNames);
 		
-		JTable table = new JTable(dtm);
+		table = new JTable(dtm) {
+			@Override
+			public boolean isCellEditable(int row, int column) { 
+				return false; 
+			}
+		};
+		table.
 		JScrollPane scroolPane = new JScrollPane(table);
 		add(scroolPane, BorderLayout.CENTER);
 		
@@ -71,7 +83,7 @@ public class TabelaSimples extends JFrame {
 		pack();
 	}
 	
-	void mostraAlunos(List<Aluno> alunos) {
+	public void mostraAlunos(List<Aluno> alunos) {
 		dtm.setNumRows(0);
 		for(Aluno aluno : alunos) {
 			Object[] data = new Object[2];
@@ -111,6 +123,22 @@ public class TabelaSimples extends JFrame {
 		mostraErro.setText("Aluno Adicionado");
 	}
 	
+	
+	public void addMostraComportamento(MouseListener ml) {
+		table.addMouseListener(ml);
+	}
+	
+	public Aluno getAlunoSelecionado() {
+		int linhaSelecionada = table.getSelectedRow();
+		String ra   = dtm.getValueAt(linhaSelecionada, 0).toString();
+		String nome = dtm.getValueAt(linhaSelecionada, 1).toString();
+		Aluno aluno = new Aluno(ra, nome);
+		return aluno;
+	}
+	
+	public void mostraAluno(Aluno aluno) {
+		new JanelaMostraAluno(aluno);
+	}
 	
 	
 	

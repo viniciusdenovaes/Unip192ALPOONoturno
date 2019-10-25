@@ -20,6 +20,10 @@ public class Controller {
 		this.view = view;
 		
 		view.addComportamentoBuscaAluno(new ComportamentoBuscaAluno());
+		view.addComportamentoAddAluno(new ComportamentoAddAluno());
+		view.addComportamentoBuscaCurso(new ComportamentoBuscaCurso());
+		view.addComportamentoAddCurso(new ComportamentoAddCurso());
+		view.addComportamentoAddCursoInAluno(new ComportamentoAddCursoInAluno());
 	}
 	
 	
@@ -29,6 +33,15 @@ public class Controller {
 			String nome = view.getNomeAluno();
 			List<Cadastro> cadastros = dao.buscarAlunoByNome(nome);
 			view.listarAlunos(cadastros);
+		}
+	}
+	
+	class ComportamentoBuscaCurso implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			String nome = view.getNomeCurso();
+			List<Curso> cursos = dao.buscarCursosByNome(nome);
+			view.listarCursos(cursos);
 		}
 	}
 	

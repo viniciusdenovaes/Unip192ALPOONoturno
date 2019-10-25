@@ -15,7 +15,7 @@ public class Curso {
 
 	@Override
 	public String toString() {
-		return "Curso [nome=" + nome + "]";
+		return this.nome;
 	}
 	
 	

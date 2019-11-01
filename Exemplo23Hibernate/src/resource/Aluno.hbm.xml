@@ -1,0 +1,25 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+"-//Hibernate/Hibernate Mapping DTD//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> 
+
+<hibernate-mapping>
+   <class name = "model.Aluno" table = "alunos">
+      
+      <meta attribute = "class-description">
+         classe entidade de alunos
+      </meta>
+      
+      <id name = "ra" type = "string" column = "ra">
+      </id>
+      
+      <set name = "cursos" table="alunos_cursos">
+         <key column = "ra"/>
+         <many-to-many column = "nome_curso" class="model.Curso"/>
+      </set>
+      
+      
+      <property name = "nome" column = "nome" type = "string"/>
+      
+   </class>
+</hibernate-mapping>

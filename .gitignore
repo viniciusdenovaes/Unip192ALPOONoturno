@@ -4,5 +4,5 @@ bin/
 .project
 .classpath
 /.metadata/
-.jar
-
+*.jar
+*.zip
